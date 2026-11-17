@@ -150,7 +150,7 @@ with tab2:
     for kol, n, v in zip(st.columns(4), NAMA, mae):
         kol.metric(f"MAE {n}", f"{angka(v, 2)} poin")
     fig, ax = plt.subplots(figsize=(10, 5.2))
-    ax.axvspan(17.5, 19.5, color="orange", alpha=0.15, label="Anomali (tidak diestimasi)")
+    ax.axvspan(17.5, 19.5, color="orange", alpha=0.15, label="Anomali (tidak digunakan dalam estimasi)")
     for i in range(4):
         ax.plot(t[t <= 19], x[t <= 19, i], color=WARNA[i], lw=2, label=f"{NAMA[i]} (model)")
         ax.plot(x_data[:, i], "o", color=WARNA[i], ms=5, label=f"{NAMA[i]} (data)")
@@ -188,14 +188,14 @@ with tab4:
     rk = solve_ivp(lambda _, xx: turunan(xx, *k), (0, t_max), x0, t_eval=t[::100], rtol=1e-10, atol=1e-12).y.T
     x_half = simulasi(x0, k, t_max, h=dt / 2)[1]
     simpangan = np.abs(x.sum(1) - 100).max()
-    st.markdown("Tiga pemeriksaan kebenaran perhitungan program. Selisih dalam poin persentase.")
+    st.markdown("Tiga pemeriksaan untuk memastikan perhitungan program benar. Selisih dinyatakan dalam poin persentase.")
     e1, e2, e3 = st.columns(3)
-    e1.metric("Total pangsa = 100%", "Terpenuhi" if simpangan < 1e-6 else "Tidak terpenuhi")
+    e1.metric("Total pangsa tetap 100%", "Terpenuhi" if simpangan < 1e-6 else "Tidak terpenuhi")
     e1.caption("Simpangan < 10⁻¹² (galat pembulatan)" if simpangan < 1e-12 else f"Simpangan {angka(simpangan, 6)} poin")
-    e2.metric("Euler vs Runge-Kutta", f"{angka(np.abs(x[::100] - rk).max(), 3)} poin")
+    e2.metric("Selisih Euler dan Runge-Kutta", f"{angka(np.abs(x[::100] - rk).max(), 3)} poin")
     e2.caption("Selisih maksimum")
-    e3.metric("Δt diperkecil setengah", f"{angka(np.abs(x_half[::200] - x[::100]).max(), 3)} poin")
-    e3.caption(f"Selisih maksimum (Δt {angka(dt, 2)} → {angka(dt / 2, 3)} bulan)")
+    e3.metric("Selisih saat Δt diperkecil", f"{angka(np.abs(x_half[::200] - x[::100]).max(), 3)} poin")
+    e3.caption(f"Selisih maksimum saat Δt {angka(dt, 2)} → {angka(dt / 2, 3)} bulan")
     fig, ax = plt.subplots(figsize=(10, 5.2))
     for i in range(4):
         ax.plot(t[::100], rk[:, i], color="black", lw=1.5)
