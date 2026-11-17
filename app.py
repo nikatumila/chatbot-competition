@@ -10,7 +10,7 @@ st.caption("Adaptasi model kompetisi Shiflet (Modul 4.1) untuk ChatGPT, Perplexi
            "dan chatbot lainnya (Claude, Copilot, DeepSeek)")
 
 # ---------------------------------------------------------------
-# 1. Data StatCounter: pangsa pasar chatbot AI Indonesia (%), Apr 2025 – Nov 2026
+# 1. Data StatCounter: pangsa pasar chatbot AI Indonesia (%), Apr 2025 - Nov 2026
 # ---------------------------------------------------------------
 BULAN = [f"{b} {y}" for y, bs in [(2025, "Apr Mei Jun Jul Agu Sep Okt Nov Des"),
                                   (2026, "Jan Feb Mar Apr Mei Jun Jul Agu Sep Okt Nov")] for b in bs.split()]
@@ -27,7 +27,7 @@ WARNA = ["#10A37F", "#7B2D8E", "#4285F4", "#D97757", "#E0B000", "#4D6BFE"]
 d = np.array(list(DATA.values()))
 x_data = np.vstack([d[:3], d[3:].sum(0)]).T
 x_data = x_data / x_data.sum(1, keepdims=True) * 100   # 4 stok, jumlah = 100
-N_FIT, dt = 18, 0.01                                   # fitting Apr 2025 – Sep 2026; langkah Euler (bulan)
+N_FIT, dt = 18, 0.01                                   # estimasi Apr 2025 - Sep 2026, langkah Euler (bulan)
 
 
 # ---------------------------------------------------------------
@@ -40,7 +40,7 @@ def turunan(x, k_CP, k_GC, k_OC):
 
 
 def simulasi(x0, k, bulan, ganti=None, h=dt):
-    """Metode Euler; ganti = (t_mulai, k_baru) untuk skenario intervensi."""
+    """Metode Euler. ganti = (t_mulai, k_baru) untuk skenario intervensi."""
     t = np.arange(int(round(bulan / h)) + 1) * h
     x = np.zeros((len(t), 4))
     x[0] = x0
@@ -129,10 +129,10 @@ nama_sk = f"skenario {pilih[0]}" if ubah else "skenario dasar"
 tab1, tab2, tab3, tab4 = st.tabs(["Data", "Validasi Model", "Proyeksi dan Skenario", "Verifikasi"])
 
 with tab1:
-    st.markdown("Sumber: **StatCounter Global Stats**, April 2025 – November 2026. "
-                "Data Oktober–November 2026 merupakan anomali dan tidak digunakan dalam estimasi.")
+    st.markdown("Sumber: **StatCounter Global Stats**, April 2025 - November 2026. "
+                "Data Oktober-November 2026 merupakan anomali dan tidak digunakan dalam estimasi.")
     fig, ax = plt.subplots(figsize=(10, 5.2))
-    ax.axvspan(17.5, 19.5, color="orange", alpha=0.15, label="Anomali data (Okt–Nov 2026)")
+    ax.axvspan(17.5, 19.5, color="orange", alpha=0.15, label="Anomali data (Okt-Nov 2026)")
     for (nama, v), w in zip(DATA.items(), WARNA):
         ax.plot(v, "-o", ms=3.5, color=w, label=nama)
     grafik(ax, "Pangsa Pasar Chatbot AI di Indonesia", kolom=4)
@@ -142,8 +142,8 @@ with tab1:
 
 with tab2:
     mae = np.abs(x[np.arange(N_FIT) * round(1 / dt)] - x_data[:N_FIT]).mean(0)
-    st.markdown("Estimasi kuadrat terkecil dengan data April 2025 – September 2026. "
-                "MAE dinyatakan dalam poin persentase; semakin kecil, semakin sesuai.")
+    st.markdown("Estimasi kuadrat terkecil dengan data April 2025 - September 2026. "
+                "MAE dinyatakan dalam poin persentase. Semakin kecil nilainya, semakin sesuai model dengan data.")
     c1, c2 = st.columns(2)
     c1.metric("Estimasi k_CP (per bulan)", angka(k_CP_fit, 4))
     c2.metric("Estimasi k_GC (per bulan)", angka(k_GC_fit, 4))
@@ -167,8 +167,8 @@ with tab3:
         d3.metric(f"Gemini melampaui ChatGPT ({nama_sk})", kalender(ts2) if ts2 is not None else "Tidak terjadi")
         d3.caption(f"Bulan ke-{angka(ts2)}" if ts2 is not None else f"Dalam {t_max} bulan")
     else:
-        d3.metric("Gemini melampaui ChatGPT (intervensi)", "–")
-        d3.caption("Pilih skenario A–D")
+        d3.metric("Gemini melampaui ChatGPT (intervensi)", "-")
+        d3.caption("Pilih skenario A-D")
     st.markdown(f"**Pangsa pasar {kalender(t_max)} ({nama_sk})**")
     for kol, n, v in zip(st.columns(4), NAMA, x_s[-1]):
         kol.metric(n, f"{angka(v)}%")
@@ -192,7 +192,7 @@ with tab4:
     e1, e2, e3 = st.columns(3)
     e1.metric("Total pangsa = 100%", "Terpenuhi" if simpangan < 1e-6 else "Tidak terpenuhi")
     e1.caption("Simpangan < 10⁻¹² (galat pembulatan)" if simpangan < 1e-12 else f"Simpangan {angka(simpangan, 6)} poin")
-    e2.metric("Euler vs Runge–Kutta", f"{angka(np.abs(x[::100] - rk).max(), 3)} poin")
+    e2.metric("Euler vs Runge-Kutta", f"{angka(np.abs(x[::100] - rk).max(), 3)} poin")
     e2.caption("Selisih maksimum")
     e3.metric("Δt diperkecil setengah", f"{angka(np.abs(x_half[::200] - x[::100]).max(), 3)} poin")
     e3.caption(f"Selisih maksimum (Δt {angka(dt, 2)} → {angka(dt / 2, 3)} bulan)")
@@ -200,6 +200,6 @@ with tab4:
     for i in range(4):
         ax.plot(t[::100], rk[:, i], color="black", lw=1.5)
         ax.plot(t, x[:, i], color=WARNA[i], ls="--", lw=2, label=f"{NAMA[i]} (Euler)")
-    ax.plot([], [], color="black", label="Runge–Kutta")
+    ax.plot([], [], color="black", label="Runge-Kutta")
     ax.set_xlim(0, t_max)
-    grafik(ax, "Solusi Euler dan Runge–Kutta", "Bulan sejak April 2025")
+    grafik(ax, "Solusi Euler dan Runge-Kutta", "Bulan sejak April 2025")
